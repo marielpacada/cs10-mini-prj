@@ -7,17 +7,24 @@ output: html_document
 
 ```{r setup, include = FALSE}
 hate_crimes <- read.csv("http://cs.brown.edu/courses/cs100/homework/data/miniproject/hate_crimes.csv")
-hate_crimes$state <- as.character(hate_crimes$state) #factor vector to char vector
+hate_crimes$state <- as.character(hate_crimes$state) #factors to char vector
 library(ggplot2)
 library(dplyr)
 ```
+
+
+
+
+
+
+
 
 ```{r white_poverty}
 ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_white_poverty)) + geom_point() + labs(title = "Percent of Trump Voters vs. Percent of White People Living in Poverty", x = "% Trump Voters", y = "% White Poverty")
 
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_white_poverty)
 ```
-### explain
+
 
 ```{r west_virginia}
 ranked_trump <- hate_crimes %>%
@@ -47,7 +54,10 @@ head(ranked_citizen)
 head(ranked_poverty)
 ```
 
+
 ```{r low_correlation}
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_population_with_high_school_degree)
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_unemployed_seasonal)
+cor(hate_crimes$share_population_with_high_school_degree, hate_crimes$share_population_in_metro_areas)
+
 ```

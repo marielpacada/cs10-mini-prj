@@ -5,8 +5,7 @@ notes:
   - explain difference between splc and fbi
       - splc collected data the week after election
       
-* DC had the lowest % Trump voters but highest hate crime
-      
+
 PROJECT OUTLINE
 - FBI vs. Trump 
 - SPLC vs. Trump
