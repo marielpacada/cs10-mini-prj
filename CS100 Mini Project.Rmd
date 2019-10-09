@@ -1,0 +1,10 @@
+---
+title: "CS100 Mini Project"
+author: "Mariel Pacada, Jason Cheong"
+date: "10/9/2019"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+```
+
