@@ -1,0 +1,109 @@
+---
+title: "Mini-Project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(mosaic)
+library(manipulate)
+hate_crimes <- read.csv("/Users/jasoncheong/Downloads/Readings/CS/Mini-Project/hate_crimes.csv")
+```
+
+### Part 1: Macro Analysis
+
+#### Hypothesis 1: Is a state with more Trump voters more likely to have more hate crimes?
+```{r analysis, results = "hide"}
+x <- select(hate_crimes, median_household_income:avg_hatecrimes_per_100k_fbi)
+cor(x, use = "complete.obs") > 0.5 
+cor(x, use = "complete.obs") < -0.5 
+```
+From the above, **only the Trump voters** variable is correlated with both the FBI and SPLC hate crimes data.
+
+```{r}
+cor(hate_crimes$share_voters_voted_trump, hate_crimes$avg_hatecrimes_per_100k_fbi, use = "complete.obs")
+
+ggplot(data = hate_crimes, aes(x = share_voters_voted_trump, y = avg_hatecrimes_per_100k_fbi)) + geom_point() + labs(title = "Trump Voters in relation to Average Hate Crimes (2010-15)", x = "Share of Trump Voters", y = "Average Hate Crimes (2010-15)")
+```
+Correlation between Trump Voters and Hate Crimes (FBI): **-0.505**
+
+```{r}
+cor(hate_crimes$share_voters_voted_trump, hate_crimes$hate_crimes_per_100k_splc, use = "complete.obs")
+
+ggplot(data = hate_crimes, aes(x = share_voters_voted_trump, y = hate_crimes_per_100k_splc)) + geom_point() + labs(title = "Trump Voters in relation to Hate Crimes (Election Week 2016)", x = "Share of Trump Voters", y = "Hate Crimes (Election Week 2016)")
+```
+Correlation between Trump Voters and Hate Crimes (FBI): **-0.657**
+
+### Part 2: Micro Analysis
+
+### Part 3: Case Studies
+
+#### Case Study 1: Washington, D.C.
+```{r}
+hate_crimes %>% select(state, share_voters_voted_trump, avg_hatecrimes_per_100k_fbi) %>% arrange(desc(avg_hatecrimes_per_100k_fbi))
+
+hate_crimes %>% select(state, share_voters_voted_trump, hate_crimes_per_100k_splc) %>% arrange(desc(hate_crimes_per_100k_splc))
+```
+Despite having the **lowest share of Trump Voters**, Washington D.C. has the **highest number of hate crimes**, both before the 2016 election and during election week 2016. Why might this be the case?
+
+Let us examine what other variables may be significant in explaining why D.C. has the highest number of hate crimes.
+
+```{r}
+hate_crimes %>% select(state, median_household_income, hate_crimes_per_100k_splc) %>% arrange(desc(median_household_income))
+```
+Median Household Income: 5th
+
+```{r}
+hate_crimes %>% select(state, share_unemployed_seasonal, hate_crimes_per_100k_splc) %>% arrange(desc(share_unemployed_seasonal))
+```
+**Seasonal Unemployment: 3rd**
+
+```{r}
+hate_crimes %>% select(state, share_population_in_metro_areas, hate_crimes_per_100k_splc) %>% arrange(desc(share_population_in_metro_areas))
+```
+
+**Share living in Metro Areas: 1st**
+
+```{r}
+hate_crimes %>% select(state, share_population_with_high_school_degree, hate_crimes_per_100k_splc) %>% arrange(desc(share_population_with_high_school_degree))
+```
+
+Share of High School Graduates: 28th
+
+```{r}
+hate_crimes %>% select(state, share_non_citizen, hate_crimes_per_100k_splc) %>% arrange(desc(share_non_citizen))
+```
+
+**Share of Non-Citizens: 2nd**
+
+```{r}
+hate_crimes %>% select(state, share_white_poverty, hate_crimes_per_100k_splc) %>% arrange(desc(share_white_poverty))
+```
+
+**Share of White Poverty: 51st**
+
+```{r}
+hate_crimes %>% select(state, gini_index, hate_crimes_per_100k_splc) %>% arrange(desc(gini_index))
+```
+
+**Gini Index (higher is more unequal): 1st**
+
+```{r}
+hate_crimes %>% select(state, share_non_white, hate_crimes_per_100k_splc) %>% arrange(desc(share_non_white))
+```
+
+**Share of Non-Whites: 1st**
+
+Based on the above, we hypothesise that **Seasonal Unemployment, Share living in Metro Areas, Share of Non-Citizens, Share of White Poverty, and Gini Index** may be **correlated** with number of Hate Crimes via _(a) variable(s) not captured in the dataset._
+
+
+### Working Notes
+
+
+
+
+
+
+
+
