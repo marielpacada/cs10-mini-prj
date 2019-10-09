@@ -3,16 +3,25 @@
 notes: 
   - when calling cor() function, include argument ~ use = "complete.obs" ~ to avoid NA
   - explain difference between splc and fbi
-ideas:
-  - correlation: 
-      - trump voters and median income
-      - trump voters and fbi crime
-      - trump voters and splc crime
-      - trump voters and non-white population 
-      - non-white population and median income
-  - superlatives: 
-      - state with most crime 
-      - state with biggest % of trump voters
-      - state with worst income inequality (gini index)
-  - histograms: 
-      - m
+      - splc collected data the week after election
+      
+* DC had the lowest % Trump voters but highest hate crime
+      
+PROJECT OUTLINE
+- FBI vs. Trump 
+- SPLC vs. Trump
+    - explain how hate crimes may have increased
+    
+    
+- Explain West Virginia profile and DC profile (most and least % voted for Trump)
+    - compare this against hate crimes especially (as well as income, educ)
+    
+    
+- White poverty vs. Trump
+- Correlations that are low 
+    - liberal-tending people usually assume that largely uneducated people // 
+      unemployed people looked to Trump to solve problems -- but these values 
+      show that's not necessarily the case
+
+
+case studies - west virginia + (oklahoma - 3rd trump, 12th income, 31st white, 19th education, 38th splc, 41st fbi)

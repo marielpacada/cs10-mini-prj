@@ -7,7 +7,47 @@ output: html_document
 
 ```{r setup, include = FALSE}
 hate_crimes <- read.csv("http://cs.brown.edu/courses/cs100/homework/data/miniproject/hate_crimes.csv")
-hate_crimes$state <- as.character(hate_crimes$state) 
+hate_crimes$state <- as.character(hate_crimes$state) #factor vector to char vector
+library(ggplot2)
+library(dplyr)
 ```
 
+```{r white_poverty}
+ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_white_poverty)) + geom_point() + labs(title = "Percent of Trump Voters vs. Percent of White People Living in Poverty", x = "% Trump Voters", y = "% White Poverty")
 
+cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_white_poverty)
+```
+### explain
+
+```{r west_virginia}
+ranked_trump <- hate_crimes %>%
+                  select(state, share_voters_voted_trump) %>%
+                  arrange(desc(share_voters_voted_trump)) #2nd most voter share
+
+ranked_income <- hate_crimes %>%
+                   select(state, median_household_income) %>% 
+                   arrange(median_household_income) #2nd least income
+
+ranked_white <- hate_crimes %>%
+                  select(state, share_non_white) %>% 
+                  arrange(share_non_white) #2nd most white
+
+ranked_citizen <- hate_crimes %>%
+                    select(state, share_non_citizen) %>%
+                    arrange(share_non_citizen) #1st most citizen, tie with mt and vt
+
+ranked_poverty <- hate_crimes %>%
+                    select(state, share_white_poverty) %>%
+                    arrange(desc(share_white_poverty)) #2nd most poor, tie with ms
+
+head(ranked_trump)
+head(ranked_income)
+head(ranked_white)
+head(ranked_citizen)
+head(ranked_poverty)
+```
+
+```{r low_correlation}
+cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_population_with_high_school_degree)
+cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_unemployed_seasonal)
+```
