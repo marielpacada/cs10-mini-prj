@@ -15,4 +15,4 @@ ideas:
       - state with biggest % of trump voters
       - state with worst income inequality (gini index)
   - histograms: 
-      - 
+      - m
