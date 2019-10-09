@@ -6,5 +6,8 @@ output: html_document
 ---
 
 ```{r setup, include = FALSE}
+hate_crimes <- read.csv("http://cs.brown.edu/courses/cs100/homework/data/miniproject/hate_crimes.csv")
+hate_crimes$state <- as.character(hate_crimes$state) 
 ```
+
 
