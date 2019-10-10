@@ -33,7 +33,7 @@ cor(hate_crimes$share_voters_voted_trump, hate_crimes$hate_crimes_per_100k_splc,
 
 ggplot(data = hate_crimes, aes(x = share_voters_voted_trump, y = hate_crimes_per_100k_splc)) + geom_point() + labs(title = "Trump Voters in relation to Hate Crimes (Election Week 2016)", x = "Share of Trump Voters", y = "Hate Crimes (Election Week 2016)")
 ```
-Correlation between Trump Voters and Hate Crimes (FBI): **-0.657**
+Correlation between Trump Voters and Hate Crimes (SPLC): **-0.657**
 
 ### Part 2: Micro Analysis
 

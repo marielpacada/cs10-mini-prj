@@ -24,3 +24,6 @@ PROJECT OUTLINE
 
 
 case studies - west virginia + (oklahoma - 3rd trump, 12th income, 31st white, 19th education, 38th splc, 41st fbi)
+
+
+map data, 

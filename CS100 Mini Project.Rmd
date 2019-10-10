@@ -1,5 +1,5 @@
 ---
-title: "CS100 Mini Project"
+title: "Hate Crimes in the US after the 2016 Presidential Election"
 author: "Mariel Pacada, Jason Cheong"
 date: "10/9/2019"
 output: html_document
@@ -10,20 +10,138 @@ hate_crimes <- read.csv("http://cs.brown.edu/courses/cs100/homework/data/minipro
 hate_crimes$state <- as.character(hate_crimes$state) #factors to char vector
 library(ggplot2)
 library(dplyr)
+library(mosaic)
+library(manipulate)
+library(usmap)
 ```
 
+### Part 1: Macro Analysis
+
+&nbsp;
+
+#### How did the United States vote for Trump?
+In this visualization, we take a look at how each state voted for Trump in the 2016 Presidential Election. The darker the purple hue, the bigger proportion of the state's population voted for Trump.
+
+```{r trump_voter_map}
+plot_usmap(data = hate_crimes, values = "share_voters_voted_trump", color = "blue") + 
+  scale_fill_continuous(low = "white", high = "blue", name = "% of Voters", label = scales::comma) + 
+  theme(legend.position = "right") + 
+  labs(title = "Percentage of the Population who Voted for Trump in the 2016 Presidential Election")
+```
+&nbsp;
+&nbsp;
+&nbsp;
+
+Visually, we can discern that Wyoming and its neighboring states central states voted for Trump at high proportions. Most southern states similarly voted for Trump en masse.
+
+&nbsp;
+
+#### How does Trump voting behavior compare to hate crime behavior?
+Here, we look at the hate crime data relative to each state. The hate crime index was collected by the Southern Poverty Law Center, a nonprofit legal advocacy organization specializing in civil rights, based on the hate crimes committed between November 9th and 18th of 2016 (days following the election on November 8th). 
+
+```{r hate_crime_map}
+plot_usmap(data = hate_crimes, values = "hate_crimes_per_100k_splc", color = "blue") + 
+  scale_fill_continuous(low = "white", high = "blue", name = "Crimes per 100k of pop.", label = scales::comma) + 
+  theme(legend.position = "right") +
+  labs(title = "Hate Crimes Committed Within 10 Days After the Election")
+```
+&nbsp;
+&nbsp;
+&nbsp;
+
+(Note: The states with a gray fill -- Hawaii, Wyoming, North Dakota, and South Dakota -- do not have data for hate crimes.)
+
+Interestingly, if we compare the hues of the first map with that of the second, we can see that the states who voted for Trump at the highest percentages experienced the least hate crime after he was elected. Below, we confirm this with finding the correlation coefficient. 
+
+```{r hate_trump_cor}
+ggplot(data = hate_crimes, aes(x = share_voters_voted_trump, y = hate_crimes_per_100k_splc)) + geom_point() + labs(title = "Trump Voters in relation to Hate Crimes (Week After Election)", x = "Proportion of Trump Voters", y = "Hate Crimes per 100k People")
+
+cor(hate_crimes$share_voters_voted_trump, hate_crimes$hate_crimes_per_100k_splc, use = "complete.obs")
+```
+Using the correlation function, we can see that the the percentage of Trump voters in a state and the number of hate crimes per 100,000 people has a slightly strong negative correlation coefficient of **-0.657**. Along with our visual evidence with the US maps above, this numerical evidence suggests that states with greater percentages of Trump voters is less likely to commit hate crime. 
 
 
 
+### Part 2: Micro Analysis
+This section will explore more variables that have a considerable correlation with the percentage of Trump voters per state. 
 
+```{r rural_areas}
+ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_population_in_metro_areas)) + geom_point() + labs(title = "Percent of Trump Voters vs. Percent of People Living in the Metropolitan", x = "Proportion of Trump Voters", y = "Metro Population Proportion")
 
-
+cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_population_in_metro_areas)
+```
+This scatterplot plots the proportion of Trump voters against the proportion of the state's population that resides in the metropolitan. Visually, we can see a slightly strong negative correlation, and we confirm with the cor() function that the correlation coefficient between the two is **-0.57**. Note that this is for proportion of the population living in metropolitan areas. In turn, we can assume that the correlation between the share of Trump voters and a state's population that resides in **rural** areas is a slightly strong positive correlation. Therefore, we have evidence to suggest that people living in rural areas are more likely to vote for Trump than those living in metropolitan areas. 
 
 ```{r white_poverty}
-ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_white_poverty)) + geom_point() + labs(title = "Percent of Trump Voters vs. Percent of White People Living in Poverty", x = "% Trump Voters", y = "% White Poverty")
+ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_white_poverty)) + geom_point() + labs(title = "Percent of Trump Voters vs. Percent of White People Living in Poverty", x = "Proportion of Trump Voters", y = "White Poverty Proportion")
 
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_white_poverty)
 ```
+This plot shows the proportion of white people in the state living in poverty as a function of the state's proportion of Trump voters. Similarly with the previous scatterplot, we see a slightly strong correlation -- this time, positive. We use the cor() function and gather that these two variables have a correlation coefficient of **0.553**. Thus, we can say that states with more people living in white poverty are more likely to vote for Trump at high proportions. 
+
+### Part 3: Case Studies
+
+#### Case Study 1: Washington, D.C.
+```{r}
+hate_crimes %>% select(state, share_voters_voted_trump, avg_hatecrimes_per_100k_fbi) %>% arrange(desc(avg_hatecrimes_per_100k_fbi))
+
+hate_crimes %>% select(state, share_voters_voted_trump, hate_crimes_per_100k_splc) %>% arrange(desc(hate_crimes_per_100k_splc))
+```
+Despite having the **lowest share of Trump Voters**, Washington D.C. has the **highest number of hate crimes**, both before the 2016 election and during election week 2016. Why might this be the case?
+
+Let us examine what other variables may be significant in explaining why D.C. has the highest number of hate crimes.
+
+```{r}
+hate_crimes %>% select(state, median_household_income, hate_crimes_per_100k_splc) %>% arrange(desc(median_household_income))
+```
+Median Household Income: 5th
+
+```{r}
+hate_crimes %>% select(state, share_unemployed_seasonal, hate_crimes_per_100k_splc) %>% arrange(desc(share_unemployed_seasonal))
+```
+**Seasonal Unemployment: 3rd**
+
+```{r}
+hate_crimes %>% select(state, share_population_in_metro_areas, hate_crimes_per_100k_splc) %>% arrange(desc(share_population_in_metro_areas))
+```
+
+**Share living in Metro Areas: 1st**
+
+```{r}
+hate_crimes %>% select(state, share_population_with_high_school_degree, hate_crimes_per_100k_splc) %>% arrange(desc(share_population_with_high_school_degree))
+```
+
+Share of High School Graduates: 28th
+
+```{r}
+hate_crimes %>% select(state, share_non_citizen, hate_crimes_per_100k_splc) %>% arrange(desc(share_non_citizen))
+```
+
+**Share of Non-Citizens: 2nd**
+
+```{r}
+hate_crimes %>% select(state, share_white_poverty, hate_crimes_per_100k_splc) %>% arrange(desc(share_white_poverty))
+```
+
+**Share of White Poverty: 51st**
+
+```{r}
+hate_crimes %>% select(state, gini_index, hate_crimes_per_100k_splc) %>% arrange(desc(gini_index))
+```
+
+**Gini Index (higher is more unequal): 1st**
+
+```{r}
+hate_crimes %>% select(state, share_non_white, hate_crimes_per_100k_splc) %>% arrange(desc(share_non_white))
+```
+
+**Share of Non-Whites: 1st**
+
+Based on the above, we hypothesise that **Seasonal Unemployment, Share living in Metro Areas, Share of Non-Citizens, Share of White Poverty, and Gini Index** may be **correlated** with number of Hate Crimes via _(a) variable(s) not captured in the dataset._
+
+
+### Working Notes
+
 
 
 ```{r west_virginia}
@@ -57,7 +175,6 @@ head(ranked_poverty)
 
 ```{r low_correlation}
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_population_with_high_school_degree)
-cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_unemployed_seasonal)
-cor(hate_crimes$share_population_with_high_school_degree, hate_crimes$share_population_in_metro_areas)
 
+cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_unemployed_seasonal)
 ```
