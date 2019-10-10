@@ -80,62 +80,58 @@ cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_white_poverty)
 This plot shows the proportion of white people in the state living in poverty as a function of the state's proportion of Trump voters. Similarly with the previous scatterplot, we see a slightly strong correlation -- this time, positive. We use the cor() function and gather that these two variables have a correlation coefficient of **0.553**. Thus, we can say that states with more people living in white poverty are more likely to vote for Trump at high proportions. 
 
 ### Part 3: Case Studies
+Looking at the two scatterplots above, we can easily determine one abvious outlier in each. These two dots actually correspond to the same region: District of Columbia. Below, we examine the characteristics of Washington, D.C. across all given variables. 
+
+&nbsp;
 
 #### Case Study 1: Washington, D.C.
 ```{r}
-hate_crimes %>% select(state, share_voters_voted_trump, avg_hatecrimes_per_100k_fbi) %>% arrange(desc(avg_hatecrimes_per_100k_fbi))
+dc_ranked_trump <- hate_crimes %>% 
+                     select(state, share_voters_voted_trump) %>% 
+                     arrange(desc(share_voters_voted_trump))
 
-hate_crimes %>% select(state, share_voters_voted_trump, hate_crimes_per_100k_splc) %>% arrange(desc(hate_crimes_per_100k_splc))
+dc_ranked_hate <- hate_crimes %>%
+                    select(state, hate_crimes_per_100k_splc) %>%
+                    arrange(desc(hate_crimes_per_100k_splc))
+
+tail(dc_ranked_trump) #51st (least) to vote for trump
+head(dc_ranked_hate) #1st hate crimes
 ```
-Despite having the **lowest share of Trump Voters**, Washington D.C. has the **highest number of hate crimes**, both before the 2016 election and during election week 2016. Why might this be the case?
+Despite having the **lowest share of Trump Voters**, Washington D.C. has the **highest number of hate crimes**, during the week after Election 2016. Why might this be the case?
 
-Let us examine what other variables may be significant in explaining why D.C. has the highest number of hate crimes.
+Let us examine what other variables (not mentioned in Part 2) may be significant in explaining why D.C. has the highest number of hate crimes.
 
 ```{r}
-hate_crimes %>% select(state, median_household_income, hate_crimes_per_100k_splc) %>% arrange(desc(median_household_income))
-```
-Median Household Income: 5th
+dc_ranked_income <- hate_crimes %>% 
+                     select(state, median_household_income) %>% 
+                     arrange(desc(median_household_income))
 
-```{r}
-hate_crimes %>% select(state, share_unemployed_seasonal, hate_crimes_per_100k_splc) %>% arrange(desc(share_unemployed_seasonal))
-```
-**Seasonal Unemployment: 3rd**
+dc_ranked_employ <- hate_crimes %>% 
+                      select(state, share_unemployed_seasonal) %>% 
+                      arrange(desc(share_unemployed_seasonal))
 
-```{r}
-hate_crimes %>% select(state, share_population_in_metro_areas, hate_crimes_per_100k_splc) %>% arrange(desc(share_population_in_metro_areas))
-```
+dc_ranked_citizen <- hate_crimes %>% 
+                       select(state, share_non_citizen) %>%
+                       arrange(desc(share_non_citizen))
 
-**Share living in Metro Areas: 1st**
+dc_ranked_poverty <- hate_crimes %>% 
+                       select(state, share_white_poverty) %>%
+                       arrange(desc(share_white_poverty))
 
-```{r}
-hate_crimes %>% select(state, share_population_with_high_school_degree, hate_crimes_per_100k_splc) %>% arrange(desc(share_population_with_high_school_degree))
-```
+dc_ranked_gini <- hate_crimes %>% 
+                  select(state, gini_index) %>%
+                  arrange(desc(gini_index))
 
-Share of High School Graduates: 28th
-
-```{r}
-hate_crimes %>% select(state, share_non_citizen, hate_crimes_per_100k_splc) %>% arrange(desc(share_non_citizen))
-```
-
-**Share of Non-Citizens: 2nd**
-
-```{r}
-hate_crimes %>% select(state, share_white_poverty, hate_crimes_per_100k_splc) %>% arrange(desc(share_white_poverty))
+head(dc_ranked_income) #5th richest 
+head(dc_ranked_employ) #3rd most unemployed
+head(dc_ranked_citizen) #2nd most non-citizens
+tail(dc_ranked_poverty) #51st (least) poor
+head(dc_ranked_gini) #1st most inequality
 ```
 
-**Share of White Poverty: 51st**
+Based on the above, we can hypothesize that unemployment, metropolitan population, and 
 
-```{r}
-hate_crimes %>% select(state, gini_index, hate_crimes_per_100k_splc) %>% arrange(desc(gini_index))
-```
 
-**Gini Index (higher is more unequal): 1st**
-
-```{r}
-hate_crimes %>% select(state, share_non_white, hate_crimes_per_100k_splc) %>% arrange(desc(share_non_white))
-```
-
-**Share of Non-Whites: 1st**
 
 Based on the above, we hypothesise that **Seasonal Unemployment, Share living in Metro Areas, Share of Non-Citizens, Share of White Poverty, and Gini Index** may be **correlated** with number of Hate Crimes via _(a) variable(s) not captured in the dataset._
 
@@ -151,25 +147,25 @@ ranked_trump <- hate_crimes %>%
 
 ranked_income <- hate_crimes %>%
                    select(state, median_household_income) %>% 
-                   arrange(median_household_income) #2nd least income
+                   arrange(desc(median_household_income))
 
 ranked_white <- hate_crimes %>%
                   select(state, share_non_white) %>% 
-                  arrange(share_non_white) #2nd most white
+                  arrange(share_non_white) 
 
 ranked_citizen <- hate_crimes %>%
                     select(state, share_non_citizen) %>%
-                    arrange(share_non_citizen) #1st most citizen, tie with mt and vt
+                    arrange(desc(share_non_citizen)) 
 
 ranked_poverty <- hate_crimes %>%
                     select(state, share_white_poverty) %>%
-                    arrange(desc(share_white_poverty)) #2nd most poor, tie with ms
+                    arrange(desc(share_white_poverty))
 
-head(ranked_trump)
-head(ranked_income)
-head(ranked_white)
-head(ranked_citizen)
-head(ranked_poverty)
+head(ranked_trump) #2nd most 
+tail(ranked_income) #50th income 
+head(ranked_white) #2nd most white 
+tail(ranked_citizen) #51st (least) non-citizen (tie with mt and vt)
+head(ranked_poverty) #2nd poorest (tie with ms)
 ```
 
 
