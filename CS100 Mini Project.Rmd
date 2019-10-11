@@ -1,7 +1,7 @@
 ---
 title: "Hate Crimes in the US after the 2016 Presidential Election"
 author: "Mariel Pacada, Jason Cheong"
-date: "10/9/2019"
+date: "10/11/2019"
 output: html_document
 ---
 
@@ -14,10 +14,10 @@ library(mosaic)
 library(manipulate)
 library(usmap)
 ```
+### Introduction
+This dataset describes the prevalence of hate crimes in the United States in the context of the most recent presidential election. THe dataset includes several characteristics of each state's population. In this exploratory data analysis, we explore how such characteristics are related with how a state voted for Trump. 
 
 ### Part 1: Macro Analysis
-
-&nbsp;
 
 #### How did the United States vote for Trump?
 In this visualization, we take a look at how each state voted for Trump in the 2016 Presidential Election. The darker the purple hue, the bigger proportion of the state's population voted for Trump.
@@ -28,6 +28,7 @@ plot_usmap(data = hate_crimes, values = "share_voters_voted_trump", color = "blu
   theme(legend.position = "right") + 
   labs(title = "Percentage of the Population who Voted for Trump in the 2016 Presidential Election")
 ```
+
 &nbsp;
 &nbsp;
 &nbsp;
@@ -54,38 +55,42 @@ plot_usmap(data = hate_crimes, values = "hate_crimes_per_100k_splc", color = "bl
 Interestingly, if we compare the hues of the first map with that of the second, we can see that the states who voted for Trump at the highest percentages experienced the least hate crime after he was elected. Below, we confirm this with finding the correlation coefficient. 
 
 ```{r hate_trump_cor}
-ggplot(data = hate_crimes, aes(x = share_voters_voted_trump, y = hate_crimes_per_100k_splc)) + geom_point() + labs(title = "Trump Voters in relation to Hate Crimes (Week After Election)", x = "Proportion of Trump Voters", y = "Hate Crimes per 100k People")
+ggplot(data = hate_crimes, aes(x = share_voters_voted_trump, y = hate_crimes_per_100k_splc)) + geom_point() + 
+  labs(title = " Percent of Trump Voters vs. Hate Crimes (Week After Election)", 
+  x = "Proportion of Trump Voters", y = "Hate Crimes per 100k People")
 
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$hate_crimes_per_100k_splc, use = "complete.obs")
 ```
 Using the correlation function, we can see that the the percentage of Trump voters in a state and the number of hate crimes per 100,000 people has a slightly strong negative correlation coefficient of **-0.657**. Along with our visual evidence with the US maps above, this numerical evidence suggests that states with greater percentages of Trump voters is less likely to commit hate crime. 
 
-
+&nbsp;
 
 ### Part 2: Micro Analysis
-This section will explore more variables that have a considerable correlation with the percentage of Trump voters per state. 
+This section will explore two more variables that have a considerable correlation with the percentage of Trump voters per state: **metropolitan population proportion** and **proportion of the population that is white and living under poverty**. 
 
 ```{r rural_areas}
-ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_population_in_metro_areas)) + geom_point() + labs(title = "Percent of Trump Voters vs. Percent of People Living in the Metropolitan", x = "Proportion of Trump Voters", y = "Metro Population Proportion")
+ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_population_in_metro_areas)) + geom_point() + 
+  labs(title = "Percent of Trump Voters vs. Percent of People Living in the Metropolitan", 
+  x = "Proportion of Trump Voters", y = "Metro Population Proportion")
 
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_population_in_metro_areas)
 ```
 This scatterplot plots the proportion of Trump voters against the proportion of the state's population that resides in the metropolitan. Visually, we can see a slightly strong negative correlation, and we confirm with the cor() function that the correlation coefficient between the two is **-0.57**. Note that this is for proportion of the population living in metropolitan areas. In turn, we can assume that the correlation between the share of Trump voters and a state's population that resides in **rural** areas is a slightly strong positive correlation. Therefore, we have evidence to suggest that people living in rural areas are more likely to vote for Trump than those living in metropolitan areas. 
 
 ```{r white_poverty}
-ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_white_poverty)) + geom_point() + labs(title = "Percent of Trump Voters vs. Percent of White People Living in Poverty", x = "Proportion of Trump Voters", y = "White Poverty Proportion")
+ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_white_poverty)) + geom_point() + 
+  labs(title = "Percent of Trump Voters vs. Percent of White People Living in Poverty", x = "Proportion of Trump Voters", 
+  y = "White Poverty Proportion")
 
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_white_poverty)
 ```
 This plot shows the proportion of white people in the state living in poverty as a function of the state's proportion of Trump voters. Similarly with the previous scatterplot, we see a slightly strong correlation -- this time, positive. We use the cor() function and gather that these two variables have a correlation coefficient of **0.553**. Thus, we can say that states with more people living in white poverty are more likely to vote for Trump at high proportions. 
 
 ### Part 3: Case Studies
-Looking at the two scatterplots above, we can easily determine one abvious outlier in each. These two dots actually correspond to the same region: District of Columbia. Below, we examine the characteristics of Washington, D.C. across all given variables. 
-
-&nbsp;
+Looking at the two scatterplots above, we can easily determine one obvious outlier in each. These two dots actually correspond to the same region: District of Columbia. Below, we examine the characteristics of Washington, D.C. across all given variables. 
 
 #### Case Study 1: Washington, D.C.
-```{r}
+```{r dc_trump_hate}
 dc_ranked_trump <- hate_crimes %>% 
                      select(state, share_voters_voted_trump) %>% 
                      arrange(desc(share_voters_voted_trump))
@@ -93,18 +98,25 @@ dc_ranked_trump <- hate_crimes %>%
 dc_ranked_hate <- hate_crimes %>%
                     select(state, hate_crimes_per_100k_splc) %>%
                     arrange(desc(hate_crimes_per_100k_splc))
+```
 
-tail(dc_ranked_trump) #51st (least) to vote for trump
-head(dc_ranked_hate) #1st hate crimes
+**D.C. voted for Trump in the least proportion.**
+```{r}
+tail(dc_ranked_trump) 
+```
+
+**D.C. experienced the most hate crimes.**
+```{r}
+head(dc_ranked_hate)
 ```
 Despite having the **lowest share of Trump Voters**, Washington D.C. has the **highest number of hate crimes**, during the week after Election 2016. Why might this be the case?
 
 Let us examine what other variables (not mentioned in Part 2) may be significant in explaining why D.C. has the highest number of hate crimes.
 
-```{r}
+```{r dc}
 dc_ranked_income <- hate_crimes %>% 
-                     select(state, median_household_income) %>% 
-                     arrange(desc(median_household_income))
+                      select(state, median_household_income) %>% 
+                      arrange(desc(median_household_income))
 
 dc_ranked_employ <- hate_crimes %>% 
                       select(state, share_unemployed_seasonal) %>% 
@@ -114,63 +126,145 @@ dc_ranked_citizen <- hate_crimes %>%
                        select(state, share_non_citizen) %>%
                        arrange(desc(share_non_citizen))
 
+dc_ranked_white <- hate_crimes %>%
+                     select(state, share_non_white) %>%
+                     arrange(desc(share_non_white))
+
 dc_ranked_poverty <- hate_crimes %>% 
                        select(state, share_white_poverty) %>%
                        arrange(desc(share_white_poverty))
 
 dc_ranked_gini <- hate_crimes %>% 
-                  select(state, gini_index) %>%
-                  arrange(desc(gini_index))
-
-head(dc_ranked_income) #5th richest 
-head(dc_ranked_employ) #3rd most unemployed
-head(dc_ranked_citizen) #2nd most non-citizens
-tail(dc_ranked_poverty) #51st (least) poor
-head(dc_ranked_gini) #1st most inequality
+                    select(state, gini_index) %>%
+                    arrange(desc(gini_index))
 ```
 
-Based on the above, we can hypothesize that unemployment, metropolitan population, and 
+**D.C. is the 5th richest region.**
+```{r}
+head(dc_ranked_income)
+```
 
+**D.C. is the 3rd most unemployed region.**
+```{r}
+head(dc_ranked_employ)
+```
 
+**D.C. has the 2nd highest non-citizen population percentage.**
+```{r}
+head(dc_ranked_citizen)
+```
 
-Based on the above, we hypothesise that **Seasonal Unemployment, Share living in Metro Areas, Share of Non-Citizens, Share of White Poverty, and Gini Index** may be **correlated** with number of Hate Crimes via _(a) variable(s) not captured in the dataset._
+**D.C. has the 2nd highest non-white population percentage.**
+```{r}
+head(dc_ranked_white) 
+```
 
+**D.C. has the smallest percentage of white people living in poverty.**
+```{r}
+tail(dc_ranked_poverty)
+```
 
-### Working Notes
+**D.C. experiences the most income inequality.**
+```{r}
+head(dc_ranked_gini)
+```
 
+Based on the above, we can see that Washington, D.C. has significant rankings in relation to US state in the variables of **median household income**, **unemployment**, **metropolitan population**, **non-citizen population**, **population of white people living under poverty**, and **Gini index**. These chracteristics of Washington, D.C. provide good exploratory evidence to potentially proceed to study how several of these variables _work together_ to create conditions that ultimately affect how a state votes during a big election.
 
+&nbsp;
 
+#### Case Study 2: West Virginia
+While D.C. was the region to vote for Trump in the least proportion, Wyoming was the one who voted in the highest proportion. However, Wyoming did not have complete data in this dataset, so we take a look at the state who voted for Trump in the second highest percentage: West Virginia. 
+
+```{r wv_trump_hate}
+wv_ranked_trump <- hate_crimes %>% 
+                     select(state, share_voters_voted_trump) %>% 
+                     arrange(desc(share_voters_voted_trump))
+```
+
+**WV voted for Trump in the second highest proportion.**
+```{r}
+head(wv_ranked_trump) 
+```
+
+Similarly with our exploratory data analysis on D.C., we take a look at how West Virgina compares with the other state in regards to the dataset's variables. 
 ```{r west_virginia}
-ranked_trump <- hate_crimes %>%
-                  select(state, share_voters_voted_trump) %>%
-                  arrange(desc(share_voters_voted_trump)) #2nd most voter share
+wv_ranked_income <- hate_crimes %>%
+                      select(state, median_household_income) %>% 
+                      arrange(desc(median_household_income))
 
-ranked_income <- hate_crimes %>%
-                   select(state, median_household_income) %>% 
-                   arrange(desc(median_household_income))
+wv_ranked_employ <- hate_crimes %>% 
+                      select(state, share_unemployed_seasonal) %>% 
+                      arrange(desc(share_unemployed_seasonal))
 
-ranked_white <- hate_crimes %>%
-                  select(state, share_non_white) %>% 
-                  arrange(share_non_white) 
+wv_ranked_citizen <- hate_crimes %>%
+                       select(state, share_non_citizen) %>%
+                       arrange(desc(share_non_citizen)) 
 
-ranked_citizen <- hate_crimes %>%
-                    select(state, share_non_citizen) %>%
-                    arrange(desc(share_non_citizen)) 
+wv_ranked_white <- hate_crimes %>%
+                     select(state, share_non_white) %>% 
+                     arrange(share_non_white) 
 
-ranked_poverty <- hate_crimes %>%
-                    select(state, share_white_poverty) %>%
-                    arrange(desc(share_white_poverty))
-
-head(ranked_trump) #2nd most 
-tail(ranked_income) #50th income 
-head(ranked_white) #2nd most white 
-tail(ranked_citizen) #51st (least) non-citizen (tie with mt and vt)
-head(ranked_poverty) #2nd poorest (tie with ms)
+wv_ranked_poverty <- hate_crimes %>%
+                       select(state, share_white_poverty) %>%
+                       arrange(desc(share_white_poverty))
 ```
 
+**WV is the 2nd poorest state.**
+```{r}
+tail(wv_ranked_income)
+```
 
-```{r low_correlation}
+**WV is the most unemployed state.**
+```{r}
+head(wv_ranked_employ)
+```
+
+**WV has the lowest non-citizen population percentage (tied with VT and MT).**
+```{r}
+tail(wv_ranked_citizen) 
+```
+
+**WV has the 2nd highest white population.**
+```{r}
+head(wv_ranked_white) #2nd most white
+```
+
+**WV is the 2nd poorest state (tied with MS).**
+```{r}
+head(wv_ranked_poverty) #2nd poorest (tie with ms)
+```
+
+Like D.C., West Virginia had significant rankings in the variables **median household income**, **unemployment**, **non-citizen population**, **white population**, and **population of white people living under poverty**. Looking at these two case studies may provide insight on further analysis on how the variables interact with each other.
+
+&nbsp;
+
+### Concluding Thoughts
+
+While our exploration of the data above may suggest relationships among several variables, we must prevent ourselves from forming biases based on these alone. As we conclude, let us quickly examine the variables **proportion of the population with a high school degree** and **proportion of the population that is unemployed**. 
+
+```{r hs_degree}
+ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_population_with_high_school_degree)) + 
+  geom_point() + labs(title = "Percent of Trump Voters vs. Percent of People with a HS Degree", 
+  x = "Proportion of Trump Voters", y = "Proportion with High School Degree")
+
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_population_with_high_school_degree)
+```
+
+```{r employment}
+ggplot(hate_crimes, aes(x = share_voters_voted_trump, y = share_unemployed_seasonal)) + geom_point() + 
+  labs(title = "Percent of Trump Voters vs. Percent of People Unemployed", 
+  x = "Proportion of Trump Voters", y = "Unemployed Proportion")
 
 cor(hate_crimes$share_voters_voted_trump, hate_crimes$share_unemployed_seasonal)
 ```
+
+&nbsp;
+
+Any discourse surrounding Donald Trump and his unanticipated rise to presidency is controversial, to say the least. Regardless of position on the political compass, communities can easily become echo chambers for biases against their respective opposing sides. For example, some liberal-leaning communities might stereotype a Trump voter as too uneducated to vote for another candidate or too desperate to find a job and in turn trusts a candidate who promises him or her one. However, from above we see that the correlation coefficient between the percentage of Trump voters and _not only_ **percentage of the population with a high school degree** _but also_ **percentage of the population that is unemployed** is very low. This revelation trumps (pun definitely intended) the idea that the typical Trump voter is of one particular identity. 
+
+&nbsp;
+
+Exploratory data analysis is a powerful approach to telling stories and sharing information with the general public. The creator of a data visualization has full control over how to present a insight from a dataset. As data scientists, we must remember to practice ethical exploration of data and strive to paint a full picture always. 
+
+&nbsp;
